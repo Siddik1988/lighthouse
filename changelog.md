@@ -1,3 +1,17 @@
+<a name="9.6.4"></a>
+# 9.6.4 (2022-07-25)
+[Full Changelog](https://github.com/compare/v9.6.3...v9.6.4)
+
+We expect this release to ship in the DevTools of [Chrome 106](https://chromiumdash.appspot.com/schedule), and to PageSpeed Insights within 2 weeks.
+
+## Deps
+
+* lighthouse-stack-packs: upgrade to 1.8.2 ([#14218](https://github.com/GoogleChrome/lighthouse/pull/14218))
+
+## Clients
+
+* lr: expose listenForStatus ([#14024](https://github.com/GoogleChrome/lighthouse/pull/14024))
+
 <a name="9.6.3"></a>
 # 9.6.3 (2022-06-28)
 [Full Changelog](https://github.com/compare/v9.6.2...v9.6.3)
