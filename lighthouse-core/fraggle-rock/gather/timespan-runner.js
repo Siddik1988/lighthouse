@@ -5,17 +5,13 @@
  */
 'use strict';
 
-const log = require('lighthouse-logger');
-const Driver = require('./driver.js');
-const Runner = require('../../runner.js');
-const {
-  getEmptyArtifactState,
-  collectPhaseArtifacts,
-  awaitArtifacts,
-} = require('./runner-helpers.js');
-const {prepareTargetForTimespanMode} = require('../../gather/driver/prepare.js');
-const {initializeConfig} = require('../config/config.js');
-const {getBaseArtifacts, finalizeArtifacts} = require('./base-artifacts.js');
+import log from 'lighthouse-logger';
+import {Driver} from './driver.js';
+import {Runner} from '../../runner.js';
+import {getEmptyArtifactState, collectPhaseArtifacts, awaitArtifacts} from './runner-helpers.js';
+import {prepareTargetForTimespanMode} from '../../gather/driver/prepare.js';
+import {initializeConfig} from '../config/config.js';
+import {getBaseArtifacts, finalizeArtifacts} from './base-artifacts.js';
 
 /**
  * @param {{page: LH.Puppeteer.Page, config?: LH.Config.Json, configContext?: LH.Config.FRContext}} options
@@ -25,7 +21,8 @@ async function startTimespanGather(options) {
   const {configContext = {}} = options;
   log.setLevel(configContext.logLevel || 'error');
 
-  const {config} = initializeConfig(options.config, {...configContext, gatherMode: 'timespan'});
+  const {config} =
+    await initializeConfig(options.config, {...configContext, gatherMode: 'timespan'});
   const driver = new Driver(options.page);
   await driver.connect();
 
@@ -77,6 +74,6 @@ async function startTimespanGather(options) {
   };
 }
 
-module.exports = {
+export {
   startTimespanGather,
 };

@@ -3,25 +3,23 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-'use strict';
 
-import {jest} from '@jest/globals';
+import jestMock from 'jest-mock';
 
 import * as lighthouse from '../../../fraggle-rock/api.js';
 import {createTestState, getAuditsBreakdown} from './pptr-test-utils.js';
 import {LH_ROOT} from '../../../../root.js';
 
-/* eslint-env jest */
+describe('Fraggle Rock API', function() {
+  // eslint-disable-next-line no-invalid-this
+  this.timeout(120_000);
 
-jest.setTimeout(90_000);
-
-describe('Fraggle Rock API', () => {
   const state = createTestState();
 
   state.installSetupAndTeardownHooks();
 
   async function setupTestPage() {
-    await state.page.goto(`${state.serverBaseUrl}/onclick.html`);
+    await state.page.goto(`${state.serverBaseUrl}/onclick.html`, {timeout: 90_000});
     // Wait for the javascript to run.
     await state.page.waitForSelector('button');
     await state.page.click('button');
@@ -52,8 +50,7 @@ describe('Fraggle Rock API', () => {
       expect(accessibility.score).toBeLessThan(1);
 
       const {auditResults, erroredAudits, failedAudits} = getAuditsBreakdown(lhr);
-      // TODO(FR-COMPAT): This assertion can be removed when full compatibility is reached.
-      expect(auditResults.length).toMatchInlineSnapshot(`73`);
+      expect(auditResults.map(audit => audit.id).sort()).toMatchSnapshot();
 
       expect(erroredAudits).toHaveLength(0);
       expect(failedAudits.map(audit => audit.id)).toContain('label');
@@ -70,6 +67,9 @@ describe('Fraggle Rock API', () => {
       const run = await lighthouse.startTimespan({page: state.page});
 
       await setupTestPage();
+
+      // Wait long enough to ensure a paint after button interaction.
+      await state.page.waitForTimeout(200);
 
       const result = await run.endTimespan();
       if (!result) throw new Error('Lighthouse failed to produce a result');
@@ -89,10 +89,9 @@ describe('Fraggle Rock API', () => {
         failedAudits,
         notApplicableAudits,
       } = getAuditsBreakdown(lhr);
-      // TODO(FR-COMPAT): This assertion can be removed when full compatibility is reached.
-      expect(auditResults.length).toMatchInlineSnapshot(`44`);
+      expect(auditResults.map(audit => audit.id).sort()).toMatchSnapshot();
 
-      expect(notApplicableAudits.length).toMatchInlineSnapshot(`5`);
+      expect(notApplicableAudits.map(audit => audit.id).sort()).toMatchSnapshot();
       expect(notApplicableAudits.map(audit => audit.id)).not.toContain('total-blocking-time');
 
       expect(erroredAudits).toHaveLength(0);
@@ -129,6 +128,9 @@ describe('Fraggle Rock API', () => {
       await page.click('button');
       await page.waitForSelector('input');
 
+      // Wait long enough to ensure a paint after button interaction.
+      await page.waitForTimeout(200);
+
       const result = await run.endTimespan();
 
       if (!result) throw new Error('Lighthouse failed to produce a result');
@@ -139,9 +141,9 @@ describe('Fraggle Rock API', () => {
       });
 
       const {auditResults, erroredAudits, notApplicableAudits} = getAuditsBreakdown(result.lhr);
-      expect(auditResults.length).toMatchInlineSnapshot(`44`);
+      expect(auditResults.map(audit => audit.id).sort()).toMatchSnapshot();
 
-      expect(notApplicableAudits.length).toMatchInlineSnapshot(`18`);
+      expect(notApplicableAudits.map(audit => audit.id).sort()).toMatchSnapshot();
       expect(notApplicableAudits.map(audit => audit.id)).not.toContain('total-blocking-time');
 
       expect(erroredAudits).toHaveLength(0);
@@ -169,8 +171,7 @@ describe('Fraggle Rock API', () => {
       });
 
       const {auditResults, failedAudits, erroredAudits} = getAuditsBreakdown(lhr);
-      // TODO(FR-COMPAT): This assertion can be removed when full compatibility is reached.
-      expect(auditResults.length).toMatchInlineSnapshot(`152`);
+      expect(auditResults.map(audit => audit.id).sort()).toMatchSnapshot();
       expect(erroredAudits).toHaveLength(0);
 
       const failedAuditIds = failedAudits.map(audit => audit.id);
@@ -195,7 +196,7 @@ describe('Fraggle Rock API', () => {
       const mainDocumentUrl = `${serverBaseUrl}/index.html`;
       await page.goto(initialUrl);
 
-      const requestor = jest.fn(async () => {
+      const requestor = jestMock.fn(async () => {
         await page.click('a');
       });
 
@@ -215,8 +216,7 @@ describe('Fraggle Rock API', () => {
       });
 
       const {auditResults, failedAudits, erroredAudits} = getAuditsBreakdown(lhr);
-      // TODO(FR-COMPAT): This assertion can be removed when full compatibility is reached.
-      expect(auditResults.length).toMatchInlineSnapshot(`152`);
+      expect(auditResults.map(audit => audit.id).sort()).toMatchSnapshot();
       expect(erroredAudits).toHaveLength(0);
 
       const failedAuditIds = failedAudits.map(audit => audit.id);

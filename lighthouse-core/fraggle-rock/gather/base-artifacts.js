@@ -5,13 +5,11 @@
  */
 'use strict';
 
-const log = require('lighthouse-logger');
-const {isEqual} = require('lodash');
-const {
-  getBrowserVersion,
-  getBenchmarkIndex,
-  getEnvironmentWarnings,
-} = require('../../gather/driver/environment.js');
+import log from 'lighthouse-logger';
+import isDeepEqual from 'lodash/isEqual.js';
+import {
+  getBrowserVersion, getBenchmarkIndex, getEnvironmentWarnings,
+} from '../../gather/driver/environment.js';
 
 /**
  * @param {LH.Config.FRConfig} config
@@ -61,7 +59,7 @@ function deduplicateWarnings(warnings) {
   const unique = [];
 
   for (const warning of warnings) {
-    if (unique.some(existing => isEqual(warning, existing))) continue;
+    if (unique.some(existing => isDeepEqual(warning, existing))) continue;
     unique.push(warning);
   }
 
@@ -96,7 +94,7 @@ function finalizeArtifacts(baseArtifacts, gathererArtifacts) {
   return artifacts;
 }
 
-module.exports = {
+export {
   getBaseArtifacts,
   finalizeArtifacts,
 };
