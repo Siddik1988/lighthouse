@@ -34,13 +34,11 @@ describe('Running the stringified output script', function() {
 
   before(async () => {
     fs.mkdirSync(tmpDir, {recursive: true});
-    // Stringified exports are CJS
-    fs.writeFileSync(`${tmpDir}/package.json`, '{"type": "commonjs"}');
   });
 
   beforeEach(async () => {
     testTmpDir = fs.mkdtempSync(`${tmpDir}/replay-`);
-    scriptPath = `${testTmpDir}/stringified.js`;
+    scriptPath = `${testTmpDir}/stringified.cjs`;
   });
 
   after(async () => {
